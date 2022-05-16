@@ -37,9 +37,42 @@ true_votes <- reported_votes_list %>%
 weights <- prop.table(table(strata))
 
 
+
+
+#simulate along a grid of sample sizes
+# num_sims <- 30
+# n_grid <- seq(5000, 100000, by = 5000)
+# EB_pval <- matrix(NA, nrow = num_sims, ncol = length(n_grid))
+# for(i in 1:length(n_grid)){
+#   n_strata <- round_strata_sizes(weights * n_grid[i]) + 10
+#   EB_pval[,i] <- replicate(num_sims, get_stratified_pvalue(
+#     population = true_votes, 
+#     strata = strata, 
+#     n = n_strata, 
+#     mu_0 = 0.5,
+#     method = "empirical_bernstein", 
+#     pool = "fisher", 
+#     alpha = 0.05, 
+#     bounds = c(0,1))
+#   )
+# }
+# 
+# results_list <- list(
+#   n = n_grid,
+#   pvals = EB_pval
+# )
+# save(results_list, file = "expanded_california_audit_results")
+# load("expanded_california_audit_results")
+# rejection_rate <- apply(results_list$pvals, 2, function(x){mean(x < .05)})
+
+
+
 #it takes 4.154 seconds to run this one time on all the data.
-n_strata <- round_strata_sizes(weights * 40000) + 10
-p_val <- get_stratified_pvalue(
+n_strata <- round_strata_sizes(weights * 70000) + 10
+#votes by county
+print(cbind(votes$county, n_strata))
+system.time(
+p_vals <- replicate(300, get_stratified_pvalue(
   population = true_votes, 
   strata = strata, 
   n = n_strata, 
@@ -47,30 +80,6 @@ p_val <- get_stratified_pvalue(
   method = "empirical_bernstein", 
   pool = "fisher", 
   alpha = 0.05, 
-  bounds = c(0,1))
-
-
-#simulations
-num_sims <- 300
-n_grid <- seq(30000, 40000, by = 1000)
-EB_pval <- matrix(NA, nrow = num_sims, ncol = length(n_grid))
-for(i in 1:length(n_grid)){
-  n_strata <- round_strata_sizes(weights * n_grid[i]) + 10
-  EB_pval[,i] <- replicate(num_sims, get_stratified_pvalue(
-    population = true_votes, 
-    strata = strata, 
-    n = n_strata, 
-    mu_0 = 0.5,
-    method = "empirical_bernstein", 
-    pool = "fisher", 
-    alpha = 0.05, 
-    bounds = c(0,1))
-  )
-}
-
-results_list <- list(
-  n = n_grid,
-  pvals = EB_pval
+  bounds = c(0,1)))
 )
-save(results_list, file = "california_audit_results")
-
+print(pvals)
