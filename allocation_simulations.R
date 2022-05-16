@@ -204,45 +204,47 @@ allocation_frame <- outer_frames %>% reduce(bind_rows) %>%
   as_tibble()
 
 
-save(allocation_frame, file = "expanded_allocation_power_frame")
-# load("allocation_power_frame")
+#save(allocation_frame, file = "expanded_allocation_power_frame")
+load("expanded_allocation_power_frame")
 allocation_frame_toplot <- allocation_frame %>%
   filter(allocation %in% c("ucb", "equal")) %>%
+  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
   filter(reported_margin == 0.10) %>%
   filter(true_margin %in% c(.05, .01)) %>%
   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_agg = "ALPHA-A")) %>%
-  mutate(martingale = factor(martingale, levels = c("ALPHA-ST", "ALPHA-A", "Empirical Bernstein"))) %>%
+  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+  mutate(martingale = factor(martingale, levels = c("ALPHA-ST", "ALPHA-UB", "Empirical Bernstein"))) %>%
   mutate(true_margin_long = paste("True margin =", true_margin))
 
 ggplot(allocation_frame_toplot, aes(x = unconditional_total_samples, linetype = combined, color = allocation)) +
   stat_ecdf(size = 1.5, alpha = .75) +
   scale_color_manual(values = c("darkorange3","steelblue","firebrick")) +
-  facet_grid(true_margin_long ~ martingale) +
+  facet_grid(true_margin ~ martingale) +
   xlim(0, 2000) +
   theme_bw() +
   theme(text = element_text(size = 18), axis.text = element_text(size = 14)) +
   labs(x = "Total Samples", y = "Cumulative probability of stopping", color = "Allocation Rule", linetype = "Combination Rule")
 
-# allocation_table <- allocation_frame %>%
-#   filter(allocation != "gaussian") %>%
-#   group_by(
-#     martingale,
-#     allocation,
-#     combined,
-#     reported_margin,
-#     true_margin) %>%
-#   summarize(
-#     expected_total_samples = mean(unconditional_total_samples),
-#     percentile_total_samples = quantile(unconditional_total_samples, .9)) %>%
-#   mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
-#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
-#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA: Shrink-Trunc", alpha_agg = "ALPHA: Aggressive")) %>%
-#   select(reported_margin, martingale, combined, allocation, true_margin, total_samples) %>%
-#   filter(true_margin != 0) %>%
-#   pivot_wider(names_from = "true_margin", values_from = "total_samples", names_prefix = "true_margin") %>%
-#   arrange(reported_margin, martingale, combined, allocation)
+allocation_table <- allocation_frame %>%
+  filter(allocation != "gaussian") %>%
+  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+  group_by(
+    martingale,
+    allocation,
+    combined,
+    reported_margin,
+    true_margin) %>%
+  summarize(
+    expected_total_samples = mean(unconditional_total_samples),
+    percentile_total_samples = quantile(unconditional_total_samples, .9)) %>%
+  mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
+  mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+  mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA: Shrink-Trunc", alpha_f01 = "ALPHA: Aggressive")) %>%
+  select(reported_margin, martingale, combined, allocation, true_margin, total_samples) %>%
+  filter(true_margin != 0) %>%
+  pivot_wider(names_from = "true_margin", values_from = "total_samples", names_prefix = "true_margin") %>%
+  arrange(reported_margin, martingale, combined, allocation)
 # 
 # print(xtable::xtable(allocation_table), include.rownames = FALSE)
