@@ -276,7 +276,6 @@ get_stratified_pvalue <- function(population, strata, mu_0, n, method, pool = "f
     population <- (population - bounds[1]) / diff(bounds)
     mu_0 <- (mu_0 - bounds[1]) / diff(bounds)
     if(!is.null(pars$eta_0)){
-      #null mean for alpha needs to be rescaled to reflect bounds as well
       pars$eta_0 <- (pars$eta_0 - bounds[1]) / diff(bounds)
     }
   }
@@ -289,7 +288,12 @@ get_stratified_pvalue <- function(population, strata, mu_0, n, method, pool = "f
   a <- prop.table(table(strata))
   statistics_strata <- list()
   for(k in 1:K){
-    statistics_strata[[k]] <- get_statistics(population[strata == strata_names[k]], n = n[k], method = method, alpha = alpha, pars = list(d = pars$d, eta_0 = pars$eta_0[k]))
+    statistics_strata[[k]] <- get_statistics(
+      population[strata == strata_names[k]], 
+      n = n[k], 
+      method = method, 
+      alpha = alpha, 
+      pars = list(d = pars$d, eta_0 = pars$eta_0[k]))
   }
     
   if(method %in% c("hoeffding","empirical_bernstein")){
