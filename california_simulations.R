@@ -84,6 +84,6 @@ rejection_rate <- mean(p_vals < .05)
 print(rejection_rate)
 
 #samples per strata
-n_strata <- round_strata_sizes(weights * 35000) + 10
+n_strata <- round_strata_sizes(weights * 70000) + 10
 #votes by county
 print(cbind(votes$county, n_strata))

@@ -241,7 +241,7 @@ allocation_table <- allocation_frame %>%
   mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA: Shrink-Trunc", alpha_f01 = "ALPHA: Aggressive")) %>%
+  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
   select(reported_margin, martingale, combined, allocation, true_margin, total_samples) %>%
   filter(true_margin != 0) %>%
   pivot_wider(names_from = "true_margin", values_from = "total_samples", names_prefix = "true_margin") %>%
