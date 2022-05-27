@@ -27,135 +27,95 @@ run_allocation_simulation <- function(reported_tally, hand_tally, strata, n_sims
   eta_0 <- 1 / (2 - v / assorter_bound)
   
   results_alpha_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))
-  results_alpha_gaussian_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "gaussian_ucb"))
   results_alpha_ucb_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "alpha_ucb"))
   results_alpha_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
-  results_alpha_gaussian_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "gaussian_ucb"))
   results_alpha_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
   
   results_alpha_f001_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))
-  results_alpha_f001_gaussian_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "gaussian_ucb"))
   results_alpha_f001_ucb_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "alpha_ucb"))
   results_alpha_f001_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
-  results_alpha_f001_gaussian_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, f = c(.001,.001), d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "gaussian_ucb"))
   results_alpha_f001_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
   
-  results_alpha_f01_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))
-  results_alpha_f01_gaussian_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "gaussian_ucb"))
+  results_alpha_f01_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))  
   results_alpha_f01_ucb_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "alpha_ucb"))
   results_alpha_f01_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
-  results_alpha_f01_gaussian_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, f = c(.01,.01), d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "gaussian_ucb"))
   results_alpha_f01_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
   
   results_alpha_f1_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))
-  results_alpha_f1_gaussian_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "gaussian_ucb"))
   results_alpha_f1_ucb_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "alpha_ucb"))
   results_alpha_f1_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
-  results_alpha_f1_gaussian_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, f = c(1,1), d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "gaussian_ucb"))
   results_alpha_f1_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
   
   results_eb_equal_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "equal"))
-  results_eb_gaussian_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "gaussian_ucb"))
   results_eb_ucb_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "eb_ucb"))
   results_eb_equal_fisher <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
-  results_eb_gaussian_fisher <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "fisher", rule = "gaussian_ucb"))
   results_eb_ucb_fisher <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "fisher", rule = "eb_ucb"))
   
   #record stopping times
   stopping_times_alpha_equal_product <- apply(results_alpha_equal_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_gaussian_product <- apply(results_alpha_gaussian_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_ucb_product <- apply(results_alpha_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_equal_fisher <- apply(results_alpha_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_gaussian_fisher <- apply(results_alpha_gaussian_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_ucb_fisher <- apply(results_alpha_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f001_equal_product <- apply(results_alpha_f001_equal_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f001_gaussian_product <- apply(results_alpha_f001_gaussian_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f001_ucb_product <- apply(results_alpha_f001_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f001_equal_fisher <- apply(results_alpha_f001_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f001_gaussian_fisher <- apply(results_alpha_f001_gaussian_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f001_ucb_fisher <- apply(results_alpha_f001_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_equal_product <- apply(results_alpha_f01_equal_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f01_gaussian_product <- apply(results_alpha_f01_gaussian_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_ucb_product <- apply(results_alpha_f01_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_equal_fisher <- apply(results_alpha_f01_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f01_gaussian_fisher <- apply(results_alpha_f01_gaussian_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_ucb_fisher <- apply(results_alpha_f01_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f1_equal_product <- apply(results_alpha_f1_equal_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f1_gaussian_product <- apply(results_alpha_f1_gaussian_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f1_ucb_product <- apply(results_alpha_f1_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f1_equal_fisher <- apply(results_alpha_f1_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f1_gaussian_fisher <- apply(results_alpha_f1_gaussian_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f1_ucb_fisher <- apply(results_alpha_f1_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_eb_equal_product <- apply(results_eb_equal_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_eb_gaussian_product <- apply(results_eb_gaussian_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_eb_ucb_product <- apply(results_eb_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_eb_equal_fisher <- apply(results_eb_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_eb_gaussian_fisher <- apply(results_eb_gaussian_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_eb_ucb_fisher <- apply(results_eb_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
   
   #record total samples
   total_samples_alpha_equal_product <- apply(results_alpha_equal_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_gaussian_product <- apply(results_alpha_gaussian_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_ucb_product <- apply(results_alpha_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_equal_fisher <- apply(results_alpha_equal_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_gaussian_fisher <- apply(results_alpha_gaussian_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_ucb_fisher <- apply(results_alpha_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f001_equal_product <- apply(results_alpha_f001_equal_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f001_gaussian_product <- apply(results_alpha_f001_gaussian_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f001_ucb_product <- apply(results_alpha_f001_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f001_equal_fisher <- apply(results_alpha_f001_equal_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f001_gaussian_fisher <- apply(results_alpha_f001_gaussian_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f001_ucb_fisher <- apply(results_alpha_f001_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_equal_product <- apply(results_alpha_f01_equal_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f01_gaussian_product <- apply(results_alpha_f01_gaussian_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_ucb_product <- apply(results_alpha_f01_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_equal_fisher <- apply(results_alpha_f01_equal_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f01_gaussian_fisher <- apply(results_alpha_f01_gaussian_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_ucb_fisher <- apply(results_alpha_f01_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f1_equal_product <- apply(results_alpha_f1_equal_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f1_gaussian_product <- apply(results_alpha_f1_gaussian_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f1_ucb_product <- apply(results_alpha_f1_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f1_equal_fisher <- apply(results_alpha_f1_equal_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f1_gaussian_fisher <- apply(results_alpha_f1_gaussian_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f1_ucb_fisher <- apply(results_alpha_f1_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_eb_equal_product <- apply(results_eb_equal_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_eb_gaussian_product <- apply(results_eb_gaussian_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_eb_ucb_product <- apply(results_eb_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_eb_equal_fisher <- apply(results_eb_equal_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_eb_gaussian_fisher <- apply(results_eb_gaussian_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_eb_ucb_fisher <- apply(results_eb_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
   
   #gather into dataframe and return
   power_frame <- data.frame("stop" = stopping_times_alpha_equal_product, "total_samples" = total_samples_alpha_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "alpha") %>%
     bind_rows(
-      data.frame("stop" = stopping_times_alpha_gaussian_product, "total_samples" = total_samples_alpha_gaussian_product, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "product", "martingale" = "alpha"),
       data.frame("stop" = stopping_times_alpha_ucb_product, "total_samples" = total_samples_alpha_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha"),
       data.frame("stop" = stopping_times_alpha_equal_fisher, "total_samples" = total_samples_alpha_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha"),
-      data.frame("stop" = stopping_times_alpha_gaussian_fisher, "total_samples" = total_samples_alpha_gaussian_fisher, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "fisher", "martingale" = "alpha"),
       data.frame("stop" = stopping_times_alpha_ucb_fisher, "total_samples" = total_samples_alpha_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha"),
       data.frame("stop" = stopping_times_alpha_f001_equal_product, "total_samples" = total_samples_alpha_f001_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "alpha_f001"),
-      data.frame("stop" = stopping_times_alpha_f001_gaussian_product, "total_samples" = total_samples_alpha_f001_gaussian_product, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "product", "martingale" = "alpha_f001"),
       data.frame("stop" = stopping_times_alpha_f001_ucb_product, "total_samples" = total_samples_alpha_f001_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha_f001"),
       data.frame("stop" = stopping_times_alpha_f001_equal_fisher, "total_samples" = total_samples_alpha_f001_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha_f001"),
-      data.frame("stop" = stopping_times_alpha_f001_gaussian_fisher, "total_samples" = total_samples_alpha_f001_gaussian_fisher, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "fisher", "martingale" = "alpha_f001"),
       data.frame("stop" = stopping_times_alpha_f001_ucb_fisher, "total_samples" = total_samples_alpha_f001_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha_f001"),
       data.frame("stop" = stopping_times_alpha_f01_equal_product, "total_samples" = total_samples_alpha_f01_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "alpha_f01"),
-      data.frame("stop" = stopping_times_alpha_f01_gaussian_product, "total_samples" = total_samples_alpha_f01_gaussian_product, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "product", "martingale" = "alpha_f01"),
       data.frame("stop" = stopping_times_alpha_f01_ucb_product, "total_samples" = total_samples_alpha_f01_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha_f01"),
       data.frame("stop" = stopping_times_alpha_f01_equal_fisher, "total_samples" = total_samples_alpha_f01_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha_f01"),
-      data.frame("stop" = stopping_times_alpha_f01_gaussian_fisher, "total_samples" = total_samples_alpha_f01_gaussian_fisher, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "fisher", "martingale" = "alpha_f01"),
       data.frame("stop" = stopping_times_alpha_f01_ucb_fisher, "total_samples" = total_samples_alpha_f01_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha_f01"),
       data.frame("stop" = stopping_times_alpha_f1_equal_product, "total_samples" = total_samples_alpha_f1_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "alpha_f1"),
-      data.frame("stop" = stopping_times_alpha_f1_gaussian_product, "total_samples" = total_samples_alpha_f1_gaussian_product, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "product", "martingale" = "alpha_f1"),
       data.frame("stop" = stopping_times_alpha_f1_ucb_product, "total_samples" = total_samples_alpha_f1_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha_f1"),
       data.frame("stop" = stopping_times_alpha_f1_equal_fisher, "total_samples" = total_samples_alpha_f1_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha_f1"),
-      data.frame("stop" = stopping_times_alpha_f1_gaussian_fisher, "total_samples" = total_samples_alpha_f1_gaussian_fisher, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "fisher", "martingale" = "alpha_f1"),
       data.frame("stop" = stopping_times_alpha_f1_ucb_fisher, "total_samples" = total_samples_alpha_f1_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha_f1"),
       data.frame("stop" = stopping_times_eb_equal_product, "total_samples" = total_samples_eb_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "eb"),
-      data.frame("stop" = stopping_times_eb_gaussian_product, "total_samples" = total_samples_eb_gaussian_product, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "product", "martingale" = "eb"),
       data.frame("stop" = stopping_times_eb_ucb_product, "total_samples" = total_samples_eb_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "eb"),
       data.frame("stop" = stopping_times_eb_equal_fisher, "total_samples" = total_samples_eb_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "eb"),
-      data.frame("stop" = stopping_times_eb_gaussian_fisher, "total_samples" = total_samples_eb_gaussian_fisher, "simulation" = 1:n_sims, "allocation" = "gaussian", "combined" = "fisher", "martingale" = "eb"),
       data.frame("stop" = stopping_times_eb_ucb_fisher, "total_samples" = total_samples_eb_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "eb")
     ) %>%
     mutate(overstatements = overstatements, understatements = understatements, reported_margin = round(reported_margin, 3), true_margin = round(true_margin, 3))
@@ -204,47 +164,47 @@ allocation_frame <- outer_frames %>% reduce(bind_rows) %>%
   as_tibble()
 
 
-#save(allocation_frame, file = "expanded_allocation_power_frame")
-load("expanded_allocation_power_frame")
-allocation_frame_toplot <- allocation_frame %>%
-  filter(allocation %in% c("ucb", "equal")) %>%
-  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
-  filter(reported_margin == 0.10) %>%
-  filter(true_margin %in% c(.05, .01)) %>%
-  mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
-  mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
-  mutate(martingale = factor(martingale, levels = c("ALPHA-ST", "ALPHA-UB", "Empirical Bernstein"))) %>%
-  mutate(true_margin_long = paste("True margin =", true_margin))
-
-ggplot(allocation_frame_toplot, aes(x = unconditional_total_samples, linetype = combined, color = allocation)) +
-  stat_ecdf(size = 1.5, alpha = .75) +
-  scale_color_manual(values = c("darkorange3","steelblue","firebrick")) +
-  facet_grid(true_margin ~ martingale) +
-  xlim(0, 2000) +
-  theme_bw() +
-  theme(text = element_text(size = 18), axis.text = element_text(size = 14)) +
-  labs(x = "Total Samples", y = "Cumulative probability of stopping", color = "Allocation Rule", linetype = "Combination Rule")
-
-allocation_table <- allocation_frame %>%
-  filter(allocation != "gaussian") %>%
-  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
-  group_by(
-    martingale,
-    allocation,
-    combined,
-    reported_margin,
-    true_margin) %>%
-  summarize(
-    expected_total_samples = mean(unconditional_total_samples),
-    percentile_total_samples = quantile(unconditional_total_samples, .9)) %>%
-  mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
-  mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
-  mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
-  select(reported_margin, martingale, combined, allocation, true_margin, total_samples) %>%
-  filter(true_margin != 0) %>%
-  pivot_wider(names_from = "true_margin", values_from = "total_samples", names_prefix = "true_margin") %>%
-  arrange(reported_margin, martingale, combined, allocation)
+save(allocation_frame, file = "expanded_allocation_power_frame")
+# load("expanded_allocation_power_frame")
+# allocation_frame_toplot <- allocation_frame %>%
+#   filter(allocation %in% c("ucb", "equal")) %>%
+#   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+#   filter(reported_margin == 0.10) %>%
+#   filter(true_margin %in% c(.05, .01)) %>%
+#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+#   mutate(martingale = factor(martingale, levels = c("ALPHA-ST", "ALPHA-UB", "Empirical Bernstein"))) %>%
+#   mutate(true_margin_long = paste("True margin =", true_margin))
 # 
+# ggplot(allocation_frame_toplot, aes(x = unconditional_total_samples, linetype = combined, color = allocation)) +
+#   stat_ecdf(size = 1.5, alpha = .75) +
+#   scale_color_manual(values = c("darkorange3","steelblue","firebrick")) +
+#   facet_grid(true_margin ~ martingale) +
+#   xlim(0, 2000) +
+#   theme_bw() +
+#   theme(text = element_text(size = 18), axis.text = element_text(size = 14)) +
+#   labs(x = "Total Samples", y = "Cumulative probability of stopping", color = "Allocation Rule", linetype = "Combination Rule")
+# 
+# allocation_table <- allocation_frame %>%
+#   filter(allocation != "gaussian") %>%
+#   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+#   group_by(
+#     martingale,
+#     allocation,
+#     combined,
+#     reported_margin,
+#     true_margin) %>%
+#   summarize(
+#     expected_total_samples = mean(unconditional_total_samples),
+#     percentile_total_samples = quantile(unconditional_total_samples, .9)) %>%
+#   mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
+#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+#   select(reported_margin, martingale, combined, allocation, true_margin, total_samples) %>%
+#   filter(true_margin != 0) %>%
+#   pivot_wider(names_from = "true_margin", values_from = "total_samples", names_prefix = "true_margin") %>%
+#   arrange(reported_margin, martingale, combined, allocation)
+# # 
 # print(xtable::xtable(allocation_table), include.rownames = FALSE)

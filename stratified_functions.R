@@ -1,6 +1,6 @@
 # conservative inference on stratified populations with bounded RVs
 library(tidyverse)
-library(confseq)
+#library(confseq)
 library(lpSolve)
 
 
@@ -195,7 +195,7 @@ round_strata_sizes <- function(n_strata){
 
 
 
-########## Sequentiall valid risk-measures for stratified samples ############
+########## Sequentially valid risk-measures for stratified samples ############
 #function to get samples from a population (or a stratum of a population). Used in get_stratified_pvalue()
 #inputs:
   #pop: the population as a vector of values in [0,1]
@@ -588,7 +588,7 @@ run_stratified_simulation <- function(population, strata, sample_sizes, mu_0 = 0
   #mu_0: double, hypothesized global null, defaults to 1/2 which is the usual global null for ALPHA
 #output:
   #a dataframe with a sequence of P-values and indicators for whether samples were taken from each stratum
-get_two_strata_alpha <- function(stratum_1, stratum_2, replace, u, d = NULL, eta_0 = NULL, f = NULL, min_SD = .05, rule = "equal", resolution = NULL, mu_0 = 0.5, combine = "product"){
+get_two_strata_alpha <- function(stratum_1, stratum_2, replace, u, d = NULL, eta_0 = NULL, f = NULL, min_SD = .01, rule = "equal", resolution = NULL, mu_0 = 0.5, combine = "product"){
   N <- c(length(stratum_1), length(stratum_2))
   if(is.null(resolution)){resolution <- 2*max(N)}
   w <- N / sum(N)
@@ -679,10 +679,11 @@ get_two_strata_alpha <- function(stratum_1, stratum_2, replace, u, d = NULL, eta
     terms_2_stopped <- apply(terms_2, 2, allocation)
   } else if(rule == "alpha_ucb"){
       #compute terms for lower-sided hypothesis test
-      ucb_eta_1 <- matrix(c(0, lag(cummean(shuffled_1), 1)[2:N[1]]), nrow = N[1], ncol = ncol(m_1))
-      ucb_eta_2 <- matrix(c(0, lag(cummean(shuffled_2), 1)[2:N[2]]), nrow = N[2], ncol = ncol(m_2))
+      ucb_eta_1 <- matrix(c(0, lag(cummean(shuffled_1), 1)[2:N[1]]) / (1 + f[1] / sigma_1), nrow = N[1], ncol = ncol(m_1))
+      ucb_eta_2 <- matrix(c(0, lag(cummean(shuffled_2), 1)[2:N[2]]) / (1 + f[2] / sigma_2), nrow = N[2], ncol = ncol(m_2))
       ucb_eta_1 <- pmax(matrix(epsilon_1, nrow=N[1],ncol=ncol(m_1)), pmin(ucb_eta_1, m_1 - epsilon_1))
       ucb_eta_2 <- pmax(matrix(epsilon_2, nrow=N[2],ncol=ncol(m_2)), pmin(ucb_eta_2, m_2 - epsilon_2))
+      
       ucb_terms_1 <- (shuffled_1 / m_1) * (ucb_eta_1 - m_1) / (u[1] - m_1) + (u[1] - ucb_eta_1) / (u[1] - m_1)
       ucb_terms_2 <- (shuffled_2 / m_2) * (ucb_eta_2 - m_2) / (u[2] - m_2) + (u[2] - ucb_eta_2) / (u[2] - m_2)
       ucb_terms_1[m_1 < epsilon_1] <- 0
