@@ -31,22 +31,12 @@ run_allocation_simulation <- function(reported_tally, hand_tally, strata, n_sims
   results_alpha_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
   results_alpha_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
   
-  results_alpha_f001_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))
-  results_alpha_f001_ucb_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "alpha_ucb"))
-  results_alpha_f001_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
-  results_alpha_f001_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.001,.001), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
-  
   results_alpha_f01_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))  
   results_alpha_f01_ucb_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "alpha_ucb"))
   results_alpha_f01_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
   results_alpha_f01_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
   
-  results_alpha_f1_equal_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "equal"))
-  results_alpha_f1_ucb_product <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "product", rule = "alpha_ucb"))
-  results_alpha_f1_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
-  results_alpha_f1_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(1,1), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
-  
-  results_eb_equal_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "equal"))
+    results_eb_equal_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "equal"))
   results_eb_ucb_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "eb_ucb"))
   results_eb_equal_fisher <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
   results_eb_ucb_fisher <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "fisher", rule = "eb_ucb"))
@@ -56,18 +46,10 @@ run_allocation_simulation <- function(reported_tally, hand_tally, strata, n_sims
   stopping_times_alpha_ucb_product <- apply(results_alpha_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_equal_fisher <- apply(results_alpha_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_ucb_fisher <- apply(results_alpha_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f001_equal_product <- apply(results_alpha_f001_equal_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f001_ucb_product <- apply(results_alpha_f001_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f001_equal_fisher <- apply(results_alpha_f001_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f001_ucb_fisher <- apply(results_alpha_f001_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_equal_product <- apply(results_alpha_f01_equal_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_ucb_product <- apply(results_alpha_f01_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_equal_fisher <- apply(results_alpha_f01_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_alpha_f01_ucb_fisher <- apply(results_alpha_f01_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f1_equal_product <- apply(results_alpha_f1_equal_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f1_ucb_product <- apply(results_alpha_f1_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f1_equal_fisher <- apply(results_alpha_f1_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
-  stopping_times_alpha_f1_ucb_fisher <- apply(results_alpha_f1_ucb_fisher, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_eb_equal_product <- apply(results_eb_equal_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_eb_ucb_product <- apply(results_eb_ucb_product, 3, function(x){min(which(x[,1] < alpha))})
   stopping_times_eb_equal_fisher <- apply(results_eb_equal_fisher, 3, function(x){min(which(x[,1] < alpha))})
@@ -78,18 +60,10 @@ run_allocation_simulation <- function(reported_tally, hand_tally, strata, n_sims
   total_samples_alpha_ucb_product <- apply(results_alpha_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_equal_fisher <- apply(results_alpha_equal_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_ucb_fisher <- apply(results_alpha_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f001_equal_product <- apply(results_alpha_f001_equal_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f001_ucb_product <- apply(results_alpha_f001_ucb_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f001_equal_fisher <- apply(results_alpha_f001_equal_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f001_ucb_fisher <- apply(results_alpha_f001_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_equal_product <- apply(results_alpha_f01_equal_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_ucb_product <- apply(results_alpha_f01_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_equal_fisher <- apply(results_alpha_f01_equal_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_alpha_f01_ucb_fisher <- apply(results_alpha_f01_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f1_equal_product <- apply(results_alpha_f1_equal_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f1_ucb_product <- apply(results_alpha_f1_ucb_product, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f1_equal_fisher <- apply(results_alpha_f1_equal_fisher, 3, get_total_sample_size, alpha = alpha)
-  total_samples_alpha_f1_ucb_fisher <- apply(results_alpha_f1_ucb_fisher, 3, get_total_sample_size, alpha = alpha)
   total_samples_eb_equal_product <- apply(results_eb_equal_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_eb_ucb_product <- apply(results_eb_ucb_product, 3, get_total_sample_size, alpha = alpha)
   total_samples_eb_equal_fisher <- apply(results_eb_equal_fisher, 3, get_total_sample_size, alpha = alpha)
@@ -101,24 +75,21 @@ run_allocation_simulation <- function(reported_tally, hand_tally, strata, n_sims
       data.frame("stop" = stopping_times_alpha_ucb_product, "total_samples" = total_samples_alpha_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha"),
       data.frame("stop" = stopping_times_alpha_equal_fisher, "total_samples" = total_samples_alpha_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha"),
       data.frame("stop" = stopping_times_alpha_ucb_fisher, "total_samples" = total_samples_alpha_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha"),
-      data.frame("stop" = stopping_times_alpha_f001_equal_product, "total_samples" = total_samples_alpha_f001_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "alpha_f001"),
-      data.frame("stop" = stopping_times_alpha_f001_ucb_product, "total_samples" = total_samples_alpha_f001_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha_f001"),
-      data.frame("stop" = stopping_times_alpha_f001_equal_fisher, "total_samples" = total_samples_alpha_f001_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha_f001"),
-      data.frame("stop" = stopping_times_alpha_f001_ucb_fisher, "total_samples" = total_samples_alpha_f001_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha_f001"),
       data.frame("stop" = stopping_times_alpha_f01_equal_product, "total_samples" = total_samples_alpha_f01_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "alpha_f01"),
       data.frame("stop" = stopping_times_alpha_f01_ucb_product, "total_samples" = total_samples_alpha_f01_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha_f01"),
       data.frame("stop" = stopping_times_alpha_f01_equal_fisher, "total_samples" = total_samples_alpha_f01_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha_f01"),
       data.frame("stop" = stopping_times_alpha_f01_ucb_fisher, "total_samples" = total_samples_alpha_f01_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha_f01"),
-      data.frame("stop" = stopping_times_alpha_f1_equal_product, "total_samples" = total_samples_alpha_f1_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "alpha_f1"),
-      data.frame("stop" = stopping_times_alpha_f1_ucb_product, "total_samples" = total_samples_alpha_f1_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "alpha_f1"),
-      data.frame("stop" = stopping_times_alpha_f1_equal_fisher, "total_samples" = total_samples_alpha_f1_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "alpha_f1"),
-      data.frame("stop" = stopping_times_alpha_f1_ucb_fisher, "total_samples" = total_samples_alpha_f1_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "alpha_f1"),
       data.frame("stop" = stopping_times_eb_equal_product, "total_samples" = total_samples_eb_equal_product, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "product", "martingale" = "eb"),
       data.frame("stop" = stopping_times_eb_ucb_product, "total_samples" = total_samples_eb_ucb_product, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "product", "martingale" = "eb"),
       data.frame("stop" = stopping_times_eb_equal_fisher, "total_samples" = total_samples_eb_equal_fisher, "simulation" = 1:n_sims, "allocation" = "equal", "combined" = "fisher", "martingale" = "eb"),
       data.frame("stop" = stopping_times_eb_ucb_fisher, "total_samples" = total_samples_eb_ucb_fisher, "simulation" = 1:n_sims, "allocation" = "ucb", "combined" = "fisher", "martingale" = "eb")
     ) %>%
-    mutate(overstatements = overstatements, understatements = understatements, reported_margin = round(reported_margin, 3), true_margin = round(true_margin, 3))
+    mutate(
+      risk_limit = alpha,
+      overstatements = overstatements, 
+      understatements = understatements, 
+      reported_margin = round(reported_margin, 3), 
+      true_margin = round(true_margin, 3))
   power_frame
 }
 
@@ -139,24 +110,30 @@ hand_tallies <- rbind(
   c(rep(0, 500), rep(1,500), rep(0, 500), rep(1, 500))
 )
 
-
+risk_limits <- c(.01, .05, .1)
 outer_frames <- list()
-for(i in 1:nrow(reported_tallies)){
+for(i in 1:length(risk_limits)){
   inner_frames <- list()
-  for(j in 1:nrow(hand_tallies)){
-    inner_frames[[j]] <- run_allocation_simulation(
-      hand_tally = hand_tallies[j,],
-      reported_tally = reported_tallies[i,],
-      strata = c(rep(1,1000), rep(2,1000)), 
-      n_sims = 300,
-      alpha = 0.1
-    )
-    print(paste("i = ", i, ", j = ",j, sep=""))
+  for(j in 1:nrow(reported_tallies)){
+    inner_inner_frames <- list()
+    for(k in 1:nrow(hand_tallies)){
+      inner_inner_frames[[k]] <- run_allocation_simulation(
+        hand_tally = hand_tallies[k,],
+        reported_tally = reported_tallies[j,],
+        strata = c(rep(1,1000), rep(2,1000)), 
+        n_sims = 300,
+        alpha = 0.1
+      )
+      print(paste("i = ", i, ", j = ",j, " k = ", k, sep=""))
+    }
+    inner_frames[[j]] <- inner_inner_frames %>% reduce(bind_rows)
   }
   outer_frames[[i]] <- inner_frames %>% reduce(bind_rows)
 }
 
-allocation_frame <- outer_frames %>% reduce(bind_rows) %>%
+
+allocation_frame <- outer_frames %>% 
+  reduce(bind_rows) %>%
   mutate(finite_stop = ifelse(is.infinite(stop), 1000, stop)) %>%
   mutate(unconditional_total_samples = ifelse(is.na(total_samples), 2000, total_samples)) %>%
   #mutate(reported_margin = paste("Reported Margin =", reported_margin), true_margin = paste("True Margin =", true_margin)) %>%
@@ -164,7 +141,7 @@ allocation_frame <- outer_frames %>% reduce(bind_rows) %>%
   as_tibble()
 
 
-save(allocation_frame, file = "expanded_allocation_power_frame")
+save(allocation_frame, file = "risklimits_allocation_power_frame")
 # load("expanded_allocation_power_frame")
 # allocation_frame_toplot <- allocation_frame %>%
 #   filter(allocation %in% c("ucb", "equal")) %>%
@@ -198,13 +175,41 @@ save(allocation_frame, file = "expanded_allocation_power_frame")
 #   summarize(
 #     expected_total_samples = mean(unconditional_total_samples),
 #     percentile_total_samples = quantile(unconditional_total_samples, .9)) %>%
-#   mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
+#   #mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
 #   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
 #   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
 #   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
-#   select(reported_margin, martingale, combined, allocation, true_margin, total_samples) %>%
+#   pivot_longer(cols = c("expected_total_samples", "percentile_total_samples"), names_to = "total_samples") %>%
+#   select(reported_margin, martingale, combined, allocation, true_margin, total_samples, value) %>%
+#   mutate(value = as.character(round(value))) %>%
 #   filter(true_margin != 0) %>%
-#   pivot_wider(names_from = "true_margin", values_from = "total_samples", names_prefix = "true_margin") %>%
+#   pivot_wider(names_from = c("true_margin", "total_samples"), values_from = "value") %>%
 #   arrange(reported_margin, martingale, combined, allocation)
-# # 
+# #
 # print(xtable::xtable(allocation_table), include.rownames = FALSE)
+# 
+# 
+# #compute ratios of workloads in each scenario compared to the smallest, then take geometric means
+# workload_ratios <- allocation_frame %>%
+#   filter(allocation != "gaussian") %>%
+#   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+#   group_by(
+#     martingale,
+#     allocation,
+#     combined,
+#     reported_margin,
+#     true_margin) %>%
+#   summarize(expected_total_samples = mean(unconditional_total_samples)) %>%
+#   ungroup() %>%
+#   group_by(reported_margin, true_margin) %>%
+#   mutate(workload_ratio = expected_total_samples / min(expected_total_samples)) %>%
+#   group_by(martingale, allocation, combined) %>%
+#   summarize(geo_mean = exp(mean(log(workload_ratio)))) %>%
+#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+#   select(martingale, combined, allocation, geo_mean) %>%
+#   arrange(martingale, combined, allocation, geo_mean)
+# print(xtable::xtable(workload_ratios), include.rownames = FALSE)
+#   
+
