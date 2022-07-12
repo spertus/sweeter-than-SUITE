@@ -122,7 +122,7 @@ for(i in 1:length(risk_limits)){
         reported_tally = reported_tallies[j,],
         strata = c(rep(1,1000), rep(2,1000)), 
         n_sims = 300,
-        alpha = 0.1
+        alpha = risk_limits[k]
       )
       print(paste("i = ", i, ", j = ",j, " k = ", k, sep=""))
     }
@@ -142,10 +142,11 @@ allocation_frame <- outer_frames %>%
 
 
 save(allocation_frame, file = "risklimits_allocation_power_frame")
-# load("expanded_allocation_power_frame")
+# load("risklimits_allocation_power_frame")
 # allocation_frame_toplot <- allocation_frame %>%
 #   filter(allocation %in% c("ucb", "equal")) %>%
 #   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+#   filter(risk_limit == 0.05) %>%
 #   filter(reported_margin == 0.10) %>%
 #   filter(true_margin %in% c(.05, .01)) %>%
 #   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
@@ -211,5 +212,5 @@ save(allocation_frame, file = "risklimits_allocation_power_frame")
 #   select(martingale, combined, allocation, geo_mean) %>%
 #   arrange(martingale, combined, allocation, geo_mean)
 # print(xtable::xtable(workload_ratios), include.rownames = FALSE)
-#   
+
 
