@@ -1,7 +1,7 @@
 # sweeter-than-SUITE
 
 Contains R code for [Sweeter than SUITE: Supermartingale Stratified
-Union-Intersection Tests of Elections](https://arxiv.org/abs/2207.03379) 
+Union-Intersection Tests of Elections](https://arxiv.org/abs/2207.03379). 
 
 `stratified_functions.R` is the source of all functions used to run simulations as described in the paper.
 
