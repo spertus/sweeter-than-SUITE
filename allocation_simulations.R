@@ -36,7 +36,7 @@ run_allocation_simulation <- function(reported_tally, hand_tally, strata, n_sims
   results_alpha_f01_equal_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
   results_alpha_f01_ucb_fisher <- replicate(n_sims, get_two_strata_alpha(stratum_1, stratum_2, mu_0 = 0.5, d = d, f = c(.01,.01), eta_0 = eta_0, u = u, replace = FALSE, combine = "fisher", rule = "alpha_ucb"))
   
-    results_eb_equal_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "equal"))
+  results_eb_equal_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "equal"))
   results_eb_ucb_product <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "product", rule = "eb_ucb"))
   results_eb_equal_fisher <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "fisher", rule = "equal"))
   results_eb_ucb_fisher <- replicate(n_sims, get_two_strata_EB(stratum_1, stratum_2, mu_0 = 0.5, u = u, replace = FALSE, combine = "fisher", rule = "eb_ucb"))
@@ -116,7 +116,7 @@ for(i in 1:length(risk_limits)){
   inner_frames <- list()
   for(j in 1:nrow(reported_tallies)){
     inner_inner_frames <- list()
-    for(k in 1:nrow(hand_tallies)){
+    for(k in 1:length(risk_limits)){
       inner_inner_frames[[k]] <- run_allocation_simulation(
         hand_tally = hand_tallies[k,],
         reported_tally = reported_tallies[j,],
