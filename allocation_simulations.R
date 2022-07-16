@@ -122,7 +122,7 @@ for(i in 1:length(risk_limits)){
         reported_tally = reported_tallies[j,],
         strata = c(rep(1,1000), rep(2,1000)), 
         n_sims = 300,
-        alpha = risk_limits[k]
+        alpha = risk_limits[i]
       )
       print(paste("i = ", i, ", j = ",j, " k = ", k, sep=""))
     }
