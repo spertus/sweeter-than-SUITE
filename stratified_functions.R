@@ -579,6 +579,7 @@ run_stratified_simulation <- function(population, strata, sample_sizes, mu_0 = 0
   #stratum_1: vector of doubles in [0,u[1]], population values for the first stratum
   #stratum_2: vector of doubles in [0,u[2]], population values for the second stratum
   #replace: boolean, TRUE if sampling is with replacement, FALSE if simple random sampling
+  #A_c: length-2 double, the reported assorter mean (applied to CVRs) in each stratum
   #u: length-2 double, the upper bound on the population within each stratum
   #d: length-2 double, the d parameter for shrink-trunc in each stratum; can be left undefined
   #eta_0: length-2 double, the eta_0 parameter for shrink-trunc in each stratum; can be left undefined
@@ -588,7 +589,7 @@ run_stratified_simulation <- function(population, strata, sample_sizes, mu_0 = 0
   #mu_0: double, hypothesized global null, defaults to 1/2 which is the usual global null for ALPHA
 #output:
   #a dataframe with a sequence of P-values and indicators for whether samples were taken from each stratum
-get_two_strata_alpha <- function(stratum_1, stratum_2, replace, u, d = NULL, eta_0 = NULL, f = NULL, min_SD = .01, rule = "equal", resolution = NULL, mu_0 = 0.5, combine = "product"){
+get_two_strata_alpha <- function(stratum_1, stratum_2, replace, A_c, u, d = NULL, eta_0 = NULL, f = NULL, min_SD = .01, rule = "equal", resolution = NULL, mu_0 = 0.5, combine = "product"){
   N <- c(length(stratum_1), length(stratum_2))
   if(is.null(resolution)){resolution <- 2*max(N)}
   w <- N / sum(N)
@@ -596,13 +597,20 @@ get_two_strata_alpha <- function(stratum_1, stratum_2, replace, u, d = NULL, eta
   shuffled_2 <- sample(stratum_2, size = N[2], replace = replace)
   S_1 <- c(0, cumsum(shuffled_1)[-length(shuffled_1)])
   S_2 <- c(0, cumsum(shuffled_2)[-length(shuffled_2)])
+  #this is 1 whenever there is a plurality assorter, but may need to be changed if not plurality
+  #assorter bound is the upper bound on assorters A(b_i); u is the upper bound on the population
+  assorter_bound <- 1
   
   #epsilon is defined so that eta is always one assorter value (1 invalid vote) above the null mean 
   epsilon_1 <- 1/(2*N[1])
   epsilon_2 <- 1/(2*N[2])
   
-  mu_01 <- matrix(seq(epsilon_1, mu_0/w[1] - epsilon_1, length.out = resolution), ncol = resolution, nrow = N[1], byrow = TRUE)
-  mu_02 <- matrix((mu_0 - w[1] * mu_01[1,]) / w[2], ncol = ncol(mu_01), nrow = N[2], byrow = TRUE)
+  raw_mu_01 <- matrix(seq(epsilon_1, assorter_bound - epsilon_1, length.out = resolution), ncol = resolution, nrow = N[1], byrow = TRUE)
+  raw_mu_02 <- matrix((mu_0 - w[1] * raw_mu_01[1,]) / w[2], ncol = ncol(raw_mu_01), nrow = N[2], byrow = TRUE)
+  #adjust the raw mean we wish to test by u and reported margin
+  mu_01 <- raw_mu_01 + assorter_bound - A_c[1]
+  mu_02 <- raw_mu_02 + assorter_bound - A_c[2]
+  
   
   if(replace == FALSE){
     m_1 <- (N[1] * mu_01 - S_1) / (N[1] - 1:N[1] + 1)
@@ -743,29 +751,37 @@ get_two_strata_alpha <- function(stratum_1, stratum_2, replace, u, d = NULL, eta
   #stratum_1: vector of doubles in [0,u[1]], population values for the first stratum
   #stratum_2: vector of doubles in [0,u[2]], population values for the second stratum
   #replace: boolean, TRUE if sampling is with replacement, FALSE if simple random sampling
+  #A_c: length-2 double, the reported assorter mean (applied to CVRs) in each stratum
+  #u: length-2 double, the upper bound on the population within each stratum
+  #d: length-2 double, the d parameter for shrink-trunc in each stratum; can be left undefined
+  #eta_0: length-2 double, the eta_0 parameter for shrink-trunc in each stratum; can be left undefined
+  #f: length-2 double, the f parameter in shrink-trunc in each stratum; defines how much to shrink towards u vs the estimated mean; defaults to 0 (shrink-trunc as in Stark 2022)
   #rule: string, the allocation rule to be used
   #resolution: integer, the resolution of the grid of mu_0, defaults to the equivalent of 1 vote from largest stratum
-  #mu_0: double, hypothesized global null, defaults to 1/2 which is the usual global null for RLAs
+  #mu_0: double, hypothesized global null, defaults to 1/2 which is the usual global null for ALPHA
 #output:
 #a dataframe with a sequence of P-values and indicators for whether samples were taken from each stratum
-get_two_strata_EB <- function(stratum_1, stratum_2, replace, u, rule = "equal", resolution = NULL, mu_0 = 0.5, combine = "product"){
+get_two_strata_EB <- function(stratum_1, stratum_2, replace, A_c, u, rule = "equal", resolution = NULL, mu_0 = 0.5, combine = "product"){
   N <- c(length(stratum_1), length(stratum_2))
   if(is.null(resolution)){resolution <- 2*max(N)}
   w <- N / sum(N)
   
-  #we need to rescale everything to [0,1] in order to uses empirical Bernstein
+  #we need to rescale these and the means below to [0,1] in order to uses empirical Bernstein
   shuffled_1 <- sample(stratum_1, size = N[1], replace = replace) / u[1]
   shuffled_2 <- sample(stratum_2, size = N[2], replace = replace) / u[2]
   S_1 <- c(0, cumsum(shuffled_1)[-length(shuffled_1)])
   S_2 <- c(0, cumsum(shuffled_2)[-length(shuffled_2)])
-  
+  assorter_bound <- 1
   
   #epsilon is defined so that eta is always one assorter value (1 invalid vote) above the null mean 
   epsilon_1 <- 1/(2*N[1])
   epsilon_2 <- 1/(2*N[2])
   
-  mu_01 <- matrix(seq(epsilon_1, mu_0/w[1] - epsilon_1, length.out = resolution), ncol = resolution, nrow = N[1], byrow = TRUE) / u[1]
-  mu_02 <- matrix((mu_0 - w[1] * mu_01[1,]) / w[2], ncol = ncol(mu_01), nrow = N[2], byrow = TRUE) / u[2]
+  raw_mu_01 <- matrix(seq(epsilon_1, assorter_bound - epsilon_1, length.out = resolution), ncol = resolution, nrow = N[1], byrow = TRUE)
+  raw_mu_02 <- matrix((mu_0 - w[1] * raw_mu_01[1,]) / w[2], ncol = ncol(raw_mu_01), nrow = N[2], byrow = TRUE)
+  #adjust the raw mean we wish to test by u and reported margin
+  mu_01 <- (raw_mu_01 + assorter_bound - A_c[1]) / u[1]
+  mu_02 <- (raw_mu_02 + assorter_bound - A_c[2]) / u[2]
   
   if(replace == FALSE){
     m_1 <- (N[1] * mu_01 - S_1) / (N[1] - 1:N[1] + 1)
