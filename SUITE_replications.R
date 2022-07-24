@@ -1,9 +1,8 @@
 source("stratified_functions.R")
 
-#for michigan replication
-load("~/Dropbox/RLAs/stratified-inference/elec.strat/data/MN_Senate_2006.rda")
 
-################## MIRLA Replications #########################
+
+################## MIRLA Replication #########################
 
 #Kalamazoo replication
 # start by auditing only contest with smallest margin
@@ -16,62 +15,68 @@ dm_noCVR <- (reported_votes_noCVR[1] - reported_votes_noCVR[2]) / sum(reported_v
 N <- c(sum(reported_votes_CVR), sum(reported_votes_noCVR))
 w <- N/sum(N)
 diluted_margin <- ((reported_votes_CVR[1] + reported_votes_noCVR[1]) - (reported_votes_CVR[2] + reported_votes_noCVR[2])) / sum(reported_votes_CVR + reported_votes_noCVR)
+#plurarlity contest assorter bound
+u <- 1
 
-
-#the SHANGRLA assorter value of a correct reported vote in the CVR stratum
-#note that all were correct in MIRLA CVR sample
-assorter_max <- 1
+#define tuning parameters, statistics, and assorters for CVR stratum
+assorter_mean_CVR <- mean(rep(c(1,0,1/2), reported_votes_CVR)) 
 v <- (reported_votes_CVR[1] - reported_votes_CVR[2]) / sum(reported_votes_CVR)
-B_correct <- 1 / (2 - v/assorter_max)
 min_SD <- .05
-
-#define samples and tuning parameters for CVR stratum
 n_CVR <- 8
+#the value for a CVR assorter when omega_i = 0 (CVR tally matches MVR)
+#the assorter max is 1: 1 - omega_i = 1
+B_correct <- u
 CVR_samples <- rep(B_correct, n_CVR)
-d_1 <- 5
+d_1 <- 2
 f_1 <- .1
 epsilon_1 <- 1/(2*N[1])
 eta_10 <- B_correct
-u_CVR <- 2 / (2 - v/assorter_max)
+u_CVR <- 2 * u
 
 #define samples and tuning parameters for no-CVR stratum; there is some randomness in the no-CVR samples, only summaries were given
-u_noCVR <- 1
+#may need to change path on other machines
+sampled_noCVR <- read_csv("../mirla18/log/Kalamazoo-sampled-election-day.csv", skip = 1)
 n_noCVR <- 32
-noCVR_samples <- shuffle(rep(c(1,0,1/2), c(23, 8, 1)))
 eta_20 <- mean(rep(c(1,0,1/2), reported_votes_noCVR))
 d_2 <- 5
 f_2 <- 0
 epsilon_2 <- 1/(2*N[2])
 
-#define a function to compute stratified alpha P-value given a value of mu_01
-pval_kalamazoo <- function(mu_01, martingale = "alpha", combine = "intersection"){
-  mu_02 <- (0.5 - w[1]*mu_01)/w[2]
+#define a function that computes stratified alpha P-value given a value of mu_01 for optimization
+#this function mostly scopes its arguments to the global environment
+pval_kalamazoo <- function(mu_01, noCVR_samples, martingale = "alpha", combine = "intersection"){
+  raw_mu_tilde_01 <- u + mu_01 - assorter_mean_CVR
+  raw_mu_02 <- (0.5 - w[1]*mu_01)/w[2]
+  
+  #adjust for sampling w/o replacement
+  mu_tilde_01 <- (N[1] * raw_mu_tilde_01 - cumsum(CVR_samples)) / (N[1] - 1:length(CVR_samples) + 1)
+  mu_02 <- (N[2] * raw_mu_02 - cumsum(noCVR_samples)) / (N[2] - 1:length(noCVR_samples) + 1)
   
   if(martingale == "alpha"){
     #compute alpha martingale for CVR stratum
     sigma_1 <- pmax(c(1/2, lag(get_sigma_hat_squared(CVR_samples))[2:length(CVR_samples)]), min_SD)
-    eta_1i <- pmin(pmax(((cumsum(CVR_samples) + d_1*eta_10) / (d_1 + 1:n_CVR - 1) + f_1 * u_CVR/sigma_1) / (1 + f_1/sigma_1), mu_01 + epsilon_1), u_CVR*(1-.Machine$double.eps))
-    terms_1 <- CVR_samples / mu_01 * (eta_1i - mu_01)/(u_CVR - mu_01) + (u_CVR - eta_1i)/(u_CVR - mu_01)
+    eta_1i <- pmin(pmax(((cumsum(CVR_samples) + d_1*eta_10) / (d_1 + 1:n_CVR - 1) + f_1 * u_CVR/sigma_1) / (1 + f_1/sigma_1), mu_tilde_01 + epsilon_1), u_CVR*(1-.Machine$double.eps))
+    terms_1 <- CVR_samples / mu_tilde_01 * (eta_1i - mu_tilde_01)/(u_CVR - mu_tilde_01) + (u_CVR - eta_1i)/(u_CVR - mu_tilde_01)
     
     #compute alpha martingale for no CVR stratum
     sigma_2 <- pmax(c(1/2, lag(get_sigma_hat_squared(noCVR_samples))[2:length(noCVR_samples)]), min_SD)
-    eta_2i <- pmin(pmax(((cumsum(noCVR_samples) + d_2*eta_20) / (d_2 + 1:n_noCVR - 1) + f_2 * u_noCVR/sigma_2) / (1 + f_2/sigma_2), mu_02 + epsilon_2), u_noCVR*(1-.Machine$double.eps)) 
-    terms_2 <- noCVR_samples / mu_02 * (eta_2i - mu_02)/(u_noCVR - mu_02) + (u_noCVR - eta_2i)/(u_noCVR - mu_02)
+    eta_2i <- pmin(pmax(((cumsum(noCVR_samples) + d_2*eta_20) / (d_2 + 1:n_noCVR - 1) + f_2 * u/sigma_2) / (1 + f_2/sigma_2), mu_02 + epsilon_2), u*(1-.Machine$double.eps)) 
+    terms_2 <- noCVR_samples / mu_02 * (eta_2i - mu_02)/(u - mu_02) + (u - eta_2i)/(u - mu_02)
   } else if(martingale == "eb"){
     #rescaling to [0,1]
     rescaled_CVR_samples <- CVR_samples / u_CVR
-    rescaled_noCVR_samples <- noCVR_samples / u_noCVR
-    rescaled_mu_01 <- mu_01 / u_CVR
-    rescaled_mu_02 <- mu_02 / u_noCVR
+    rescaled_noCVR_samples <- noCVR_samples / u
+    rescaled_mu_tilde_01 <- mu_01 / u_CVR
+    rescaled_mu_02 <- mu_02 / u
     
-    lambda_1 <- pmin(sqrt(log(2/.05) / (c(1/2, lag(get_sigma_hat_squared(rescaled_CVR_samples))[2:n_CVR]) * n_CVR)), 0.5)
-    lambda_2 <- pmin(sqrt(log(2/.05) / (c(1/2, lag(get_sigma_hat_squared(rescaled_noCVR_samples))[2:n_noCVR]) * n_noCVR)), 0.5)
+    lambda_1 <- pmin(sqrt(log(2/.05) / (c(1/2, lag(get_sigma_hat_squared(rescaled_CVR_samples))[2:n_CVR]) * n_CVR)), 0.75)
+    lambda_2 <- pmin(sqrt(log(2/.05) / (c(1/2, lag(get_sigma_hat_squared(rescaled_noCVR_samples))[2:n_noCVR]) * n_noCVR)), 0.75)
     v_1 <- get_empirical_Vn(rescaled_CVR_samples)
     v_2 <- get_empirical_Vn(rescaled_noCVR_samples)
     psi_E_1 <- get_psi_E(lambda_1)
     psi_E_2 <- get_psi_E(lambda_2)
     
-    terms_1 <- exp(lambda_1 * (rescaled_CVR_samples - rescaled_mu_01) - v_1 * psi_E_1)
+    terms_1 <- exp(lambda_1 * (rescaled_CVR_samples - rescaled_mu_tilde_01) - v_1 * psi_E_1)
     terms_2 <- exp(lambda_2 * (rescaled_noCVR_samples - rescaled_mu_02) - v_2 * psi_E_2)
   } else{
     stop("input a valid method")
@@ -90,105 +95,34 @@ pval_kalamazoo <- function(mu_01, martingale = "alpha", combine = "intersection"
   p_value
 }
 
-global_p_val_alpha_intersection <- optimize(
-  function(x){pval_kalamazoo(mu_0 = x, martingale = "alpha", combine = "intersection")}, 
-  interval = c(0, min(u_CVR,0.5/w[1])),
-  maximum = T)$objective
-global_p_val_eb_intersection <- optimize(
-  function(x){pval_kalamazoo(mu_0 = x, martingale = "eb", combine = "intersection")}, 
-  interval = c(0, min(u_CVR,0.5/w[1])), 
-  maximum = T)$objective
-global_p_val_alpha_fisher <- optimize(
-  function(x){pval_kalamazoo(mu_0 = x, martingale = "alpha", combine = "fisher")}, 
-  interval = c(0, min(u_CVR,0.5/w[1])), 
-  maximum = T)$objective
-global_p_val_eb_fisher <- optimize(
-  function(x){pval_kalamazoo(mu_0 = x, martingale = "eb", combine = "fisher")}, 
-  interval = c(0, min(u_CVR,0.5/w[1])), 
-  maximum = T)$objective
+#get the P-value for a particular order of CVR ballots
+get_p_values <- function(){
+  #there is randomness in the ballot-polling stratum 
+  noCVR_samples <- shuffle(rep(c(1,0,1/2), c(23, 8, 1)))
+  #optimize p values
+  global_p_val_alpha_intersection <- optimize(
+    function(x){pval_kalamazoo(mu_0 = x, noCVR_samples = noCVR_samples, martingale = "alpha", combine = "intersection")}, 
+    interval = c(assorter_mean_CVR - 1, assorter_mean_CVR + 1),
+    maximum = T)$objective
+  global_p_val_eb_intersection <- optimize(
+    function(x){pval_kalamazoo(mu_0 = x, noCVR_samples = noCVR_samples, martingale = "eb", combine = "intersection")}, 
+    interval = c(assorter_mean_CVR - 1, assorter_mean_CVR + 1), 
+    maximum = T)$objective
+  global_p_val_alpha_fisher <- optimize(
+    function(x){pval_kalamazoo(mu_0 = x, noCVR_samples = noCVR_samples, martingale = "alpha", combine = "fisher")}, 
+    interval = c(assorter_mean_CVR - 1, assorter_mean_CVR + 1), 
+    maximum = T)$objective
+  global_p_val_eb_fisher <- optimize(
+    function(x){pval_kalamazoo(mu_0 = x, noCVR_samples = noCVR_samples, martingale = "eb", combine = "fisher")}, 
+    interval = c(assorter_mean_CVR - 1, assorter_mean_CVR + 1), 
+    maximum = T)$objective
+  c("alpha_intersection" = global_p_val_alpha_intersection,
+             "eb_intersection" = global_p_val_eb_intersection,
+             "alpha_fisher" = global_p_val_alpha_fisher,
+             "eb_fisher" = global_p_val_eb_fisher)
+}
 
-
-
-
-############# CORLA replications ################
-#replicating simulations in CORLA18: https://github.com/pbstark/CORLA18/blob/master/code/hybrid-audit-example-1.ipynb
-##### example 1 ######
-#upper bound on assorters for plurality contests
-u <- 1
-
-#example 1, medium sized election, close race
-#define stratum 1 (CVR) population 
-stratum_1_reported <- c(rep(1, 45500), rep(0, 49500), rep(1/2, 5000))
-stratum_1_hand <- stratum_1_reported
-stratum_1_v <- 2 * mean(stratum_1_reported) - 1
-stratum_1_range <- c(0, (1 + 1/u) / (2-stratum_1_v/u))
-stratum_1_omegas <- stratum_1_reported - stratum_1_hand 
-stratum_1_population <- (1 - stratum_1_omegas/u) / (2 - stratum_1_v/u)
-
-#define stratum 2 (no CVR) population
-stratum_2_population <- c(rep(1, 7500), rep(0, 1500), rep(1/2, 1000))
-
-#combine 
-population <- c(stratum_1_population, stratum_2_population)
-strata <- c(rep(1, length(stratum_1_population)), rep(2, length(stratum_2_population)))
-sample_sizes <- matrix(c(700, 500), nrow = 1, ncol = 2)
-
-eta_0 <- c(1 / (2 - stratum_1_v / stratum_1_range[2]), mean(stratum_2_population))
-
-
-power_frame <- run_stratified_simulation(
-  population = population, 
-  strata = strata, 
-  sample_sizes = sample_sizes, 
-  n_sims = 1e4, 
-  alpha = 0.1, 
-  pars = list(
-    d = 20,
-    eta_0 = eta_0),
-  bounds = c(0, max(stratum_1_range[2], 1))
-)
-save(power_frame, file = "CORLA_replication_frame_1")
-
-##### example 2 ######
-
-#upper bound on assorters for plurality contests
-u <- 1
-
-#example 1, medium sized election, close race
-#define stratum 1 (CVR) population 
-stratum_1_reported <- c(rep(1, 1.102e6), rep(0, 7.03e5), rep(1/2, 9.5e4))
-stratum_1_hand <- stratum_1_reported
-stratum_1_v <- 2 * mean(stratum_1_reported) - 1
-stratum_1_range <- c(0, (1 + 1/u) / (2-v/u))
-stratum_1_omegas <- stratum_1_reported - stratum_1_hand 
-stratum_1_population <- (1 - stratum_1_omegas/u) / (2 - stratum_1_v/u)
-
-#define stratum 2 (no CVR) population
-stratum_2_population <- c(rep(1, 4.25e4), rep(0, 5.25e4), rep(1/2, 5e3))
-
-#combine 
-population <- c(stratum_1_population, stratum_2_population)
-strata <- c(rep(1, length(stratum_1_population)), rep(2, length(stratum_2_population)))
-sample_sizes <- matrix(c(700, 500), nrow = 1, ncol = 2)
-
-eta_0 <- c(1 / (2 - stratum_1_v / stratum_1_range[2]), mean(stratum_2_population))
-
-
-power_frame <- run_stratified_simulation(
-  population = population, 
-  strata = strata, 
-  sample_sizes = sample_sizes, 
-  n_sims = 1e3, 
-  alpha = .1,
-  pars = list(
-    d = 20,
-    eta_0 = eta_0),
-  bounds = c(0, max(stratum_1_range[2], 1))
-)
-
-save(power_frame, file = "CORLA_replication_frame_2")
-
-
+p_value_distributions <- replicate(10000, get_p_values()) %>%  t()
 
 
 

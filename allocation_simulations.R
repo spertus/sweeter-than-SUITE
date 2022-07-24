@@ -118,12 +118,12 @@ for(i in 1:length(risk_limits)){
   inner_frames <- list()
   for(j in 1:nrow(reported_tallies)){
     inner_inner_frames <- list()
-    for(k in 1:length(risk_limits)){
+    for(k in 1:nrow(hand_tallies)){
       inner_inner_frames[[k]] <- run_allocation_simulation(
         hand_tally = hand_tallies[k,],
         reported_tally = reported_tallies[j,],
         strata = c(rep(1,1000), rep(2,1000)), 
-        n_sims = 100,
+        n_sims = 300,
         alpha = risk_limits[i]
       )
       print(paste("i = ", i, ", j = ",j, " k = ", k, sep=""))
@@ -143,99 +143,99 @@ allocation_frame <- outer_frames %>%
   as_tibble()
 
 
-save(allocation_frame, file = "risklimits_allocation_power_frame_n100")
-# load("risklimits_allocation_power_frame")
-# allocation_frame_toplot <- allocation_frame %>%
-#   filter(allocation %in% c("ucb", "equal")) %>%
-#   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
-#   filter(risk_limit == 0.05) %>%
-#   filter(reported_margin == 0.10) %>%
-#   filter(true_margin %in% c(.05, .01)) %>%
-#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
-#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
-#   mutate(martingale = factor(martingale, levels = c("ALPHA-ST", "ALPHA-UB", "Empirical Bernstein"))) %>%
-#   mutate(true_margin_long = paste("True margin =", true_margin))
-# 
-# ggplot(allocation_frame_toplot, aes(x = unconditional_total_samples, linetype = combined, color = allocation)) +
-#   stat_ecdf(size = 1.5, alpha = .75) +
-#   scale_color_manual(values = c("darkorange3","steelblue","firebrick")) +
-#   facet_grid(true_margin ~ martingale) +
-#   xlim(0, 2000) +
-#   theme_bw() +
-#   theme(text = element_text(size = 18), axis.text = element_text(size = 14)) +
-#   labs(x = "Total Samples", y = "Cumulative probability of stopping", color = "Allocation Rule", linetype = "Combination Rule")
-# 
-# 
-# allocation_table <- allocation_frame %>%
-#   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
-#   filter(risk_limit == 0.05) %>%
-#   group_by(
-#     martingale,
-#     allocation,
-#     combined,
-#     reported_margin,
-#     true_margin) %>%
-#   summarize(
-#     expected_total_samples = mean(unconditional_total_samples),
-#     percentile_total_samples = quantile(unconditional_total_samples, .9)) %>%
-#   #mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
-#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
-#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
-#   pivot_longer(cols = c("expected_total_samples", "percentile_total_samples"), names_to = "total_samples") %>%
-#   select(reported_margin, martingale, combined, allocation, true_margin, total_samples, value) %>%
-#   mutate(value = as.character(round(value))) %>%
-#   filter(true_margin != 0) %>%
-#   pivot_wider(names_from = c("true_margin", "total_samples"), values_from = "value") %>%
-#   arrange(reported_margin, martingale, combined, allocation)
-# 
-# print(xtable::xtable(allocation_table), include.rownames = FALSE)
-# 
-# 
-# #ratios of workloads in every scenario and method, depending on the risk-limit
-# risk_limit_ratios <- allocation_frame %>%
-#   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
-#   group_by(
-#     martingale,
-#     allocation,
-#     combined,
-#     risk_limit,
-#     reported_margin,
-#     true_margin) %>%
-#   summarize(expected_total_samples = mean(unconditional_total_samples)) %>%
-#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
-#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
-#   pivot_longer(cols = c("expected_total_samples"), names_to = "total_samples") %>%
-#   select(reported_margin, risk_limit, martingale, combined, allocation, true_margin, total_samples, value) %>%
-#   filter(true_margin != 0) %>%
-#   pivot_wider(names_from = c("risk_limit", "total_samples"), values_from = "value", names_prefix = "rl_") %>%
-#   mutate(one_over_five = rl_0.01_expected_total_samples / rl_0.05_expected_total_samples, 
-#          ten_over_five = rl_0.1_expected_total_samples / rl_0.05_expected_total_samples)
-# 
-# 
-# #compute ratios of workloads in each scenario compared to the smallest, then take geometric means
-# workload_ratios <- allocation_frame %>%
-#   filter(risk_limit == 0.05) %>%
-#   filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
-#   group_by(
-#     martingale,
-#     allocation,
-#     combined,
-#     reported_margin,
-#     true_margin) %>%
-#   summarize(expected_total_samples = mean(unconditional_total_samples)) %>%
-#   ungroup() %>%
-#   group_by(reported_margin, true_margin) %>%
-#   mutate(workload_ratio = expected_total_samples / min(expected_total_samples)) %>%
-#   group_by(martingale, allocation, combined) %>%
-#   summarize(geo_mean = exp(mean(log(workload_ratio)))) %>%
-#   mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
-#   mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
-#   mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
-#   select(martingale, combined, allocation, geo_mean) %>%
-#   arrange(martingale, combined, allocation, geo_mean)
-# print(xtable::xtable(workload_ratios), include.rownames = FALSE)
+# save(allocation_frame, file = "risklimits_allocation_power_frame")
+load("risklimits_allocation_power_frame")
+allocation_frame_toplot <- allocation_frame %>%
+  filter(allocation %in% c("ucb", "equal")) %>%
+  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+  filter(risk_limit == 0.05) %>%
+  filter(reported_margin == 0.1) %>%
+  filter(true_margin %in% c(0.05,.01)) %>%
+  mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+  mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+  mutate(martingale = factor(martingale, levels = c("ALPHA-ST", "ALPHA-UB", "Empirical Bernstein"))) %>%
+  mutate(true_margin_long = paste("True margin =", true_margin))
+
+ggplot(allocation_frame_toplot, aes(x = unconditional_total_samples, linetype = combined, color = allocation)) +
+  stat_ecdf(size = 1.5, alpha = .75) +
+  scale_color_manual(values = c("darkorange3","steelblue","firebrick")) +
+  facet_grid(true_margin ~ martingale) +
+  xlim(0, 2000) +
+  theme_bw() +
+  theme(text = element_text(size = 18), axis.text = element_text(size = 14)) +
+  labs(x = "Total Samples", y = "Cumulative probability of stopping", color = "Allocation Rule", linetype = "Combination Rule")
+
+
+allocation_table <- allocation_frame %>%
+  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+  filter(risk_limit == 0.05) %>%
+  group_by(
+    martingale,
+    allocation,
+    combined,
+    reported_margin,
+    true_margin) %>%
+  summarize(
+    expected_total_samples = mean(unconditional_total_samples),
+    percentile_total_samples = quantile(unconditional_total_samples, .9)) %>%
+  #mutate(total_samples = paste(round(expected_total_samples), " (", round(percentile_total_samples), ")", sep = "")) %>%
+  mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+  mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+  pivot_longer(cols = c("expected_total_samples", "percentile_total_samples"), names_to = "total_samples") %>%
+  select(reported_margin, martingale, combined, allocation, true_margin, total_samples, value) %>%
+  mutate(value = as.character(round(value))) %>%
+  filter(true_margin != 0) %>%
+  pivot_wider(names_from = c("true_margin", "total_samples"), values_from = "value") %>%
+  arrange(reported_margin, martingale, combined, allocation)
+
+print(xtable::xtable(allocation_table), include.rownames = FALSE)
+
+
+#ratios of workloads in every scenario and method, depending on the risk-limit
+risk_limit_ratios <- allocation_frame %>%
+  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+  group_by(
+    martingale,
+    allocation,
+    combined,
+    risk_limit,
+    reported_margin,
+    true_margin) %>%
+  summarize(expected_total_samples = mean(unconditional_total_samples)) %>%
+  mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+  mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+  pivot_longer(cols = c("expected_total_samples"), names_to = "total_samples") %>%
+  select(reported_margin, risk_limit, martingale, combined, allocation, true_margin, total_samples, value) %>%
+  filter(true_margin != 0) %>%
+  pivot_wider(names_from = c("risk_limit", "total_samples"), values_from = "value", names_prefix = "rl_") %>%
+  mutate(one_over_five = rl_0.01_expected_total_samples / rl_0.05_expected_total_samples,
+         ten_over_five = rl_0.1_expected_total_samples / rl_0.05_expected_total_samples)
+
+
+#compute ratios of workloads in each scenario compared to the smallest, then take geometric means
+workload_ratios <- allocation_frame %>%
+  filter(risk_limit == 0.05) %>%
+  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+  group_by(
+    martingale,
+    allocation,
+    combined,
+    reported_margin,
+    true_margin) %>%
+  summarize(expected_total_samples = mean(unconditional_total_samples)) %>%
+  ungroup() %>%
+  group_by(reported_margin, true_margin) %>%
+  mutate(workload_ratio = expected_total_samples / min(expected_total_samples)) %>%
+  group_by(martingale, allocation, combined) %>%
+  summarize(geo_mean = exp(mean(log(workload_ratio)))) %>%
+  mutate(allocation = recode(allocation, equal = "Proportional", ucb = "Lower-sided test")) %>%
+  mutate(combined = ifelse(combined == "fisher", "Fisher", "Intersection")) %>%
+  mutate(martingale = recode(martingale, eb = "Empirical Bernstein", alpha = "ALPHA-ST", alpha_f01 = "ALPHA-UB")) %>%
+  select(martingale, combined, allocation, geo_mean) %>%
+  arrange(martingale, combined, allocation, geo_mean)
+print(xtable::xtable(workload_ratios), include.rownames = FALSE)
 
 
