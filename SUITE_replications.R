@@ -95,7 +95,7 @@ pval_kalamazoo <- function(mu_01, noCVR_samples, martingale = "alpha", combine =
   p_value
 }
 
-#get the P-value for a particular order of CVR ballots
+#get the P-value for a particular order of no CVR ballots
 get_p_values <- function(){
   #there is randomness in the ballot-polling stratum 
   noCVR_samples <- shuffle(rep(c(1,0,1/2), c(23, 8, 1)))
