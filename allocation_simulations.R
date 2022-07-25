@@ -158,8 +158,8 @@ allocation_frame_toplot <- allocation_frame %>%
   mutate(true_margin_long = paste("True margin =", true_margin))
 
 ggplot(allocation_frame_toplot, aes(x = unconditional_total_samples, linetype = combined, color = allocation)) +
-  stat_ecdf(size = 1.5, alpha = .75) +
-  scale_color_manual(values = c("darkorange3","steelblue","firebrick")) +
+  stat_ecdf(size = 1.5, alpha = .85) +
+  scale_color_manual(values = c("darkorange4","lightskyblue")) +
   facet_grid(true_margin ~ martingale) +
   xlim(0, 2000) +
   theme_bw() +
@@ -238,4 +238,19 @@ workload_ratios <- allocation_frame %>%
   arrange(martingale, combined, allocation, geo_mean)
 print(xtable::xtable(workload_ratios), include.rownames = FALSE)
 
+
+#workload ratios for each scenario and method comparing lower sided testing to proportional
+proportional_vs_lowersided <- allocation_frame %>% 
+  filter(risk_limit == 0.05) %>%
+  filter(martingale %in% c("eb","alpha","alpha_f01")) %>%
+  group_by(
+    martingale,
+    allocation,
+    combined,
+    reported_margin,
+    true_margin) %>%
+  summarize(expected_total_samples = mean(unconditional_total_samples)) %>%
+  pivot_wider(names_from = allocation, values_from = expected_total_samples) %>%
+  mutate(ratio = ucb / equal) %>%
+  filter(martingale == "eb")
 
