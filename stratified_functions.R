@@ -57,10 +57,11 @@ hedged_pvalue <- function(population, mu_0 = 1/2, theta = 1, log = FALSE, shuffl
   lagged_mu_hat <- lag(mu_hat)
   lagged_mu_hat[1] <- 1/2
   v_n <- (population - lagged_mu_hat)^2
-  lagged_sigma_hat <- lag(sqrt(cummean((population - mu_hat)^2)))
+  sigma_min <- 1e-3 #lower limit on estimate of sigma_hat, prevents infinite bets even when mu_0 = 0 
+  lagged_sigma_hat <- pmax(sigma_min, lag(sqrt(cummean((population - mu_hat)^2))))
   lagged_sigma_hat[1:2] <- 1/4
-  lambda_sequence_plus <- pmin(sqrt(2 * log(2/alpha) / (log(1:N) * 1:N * lagged_sigma_hat)), .9 / mu_0)
-  lambda_sequence_minus <- pmin(sqrt(2 * log(2/alpha) / (log(1:N) * 1:N * lagged_sigma_hat)), .9 / (1-mu_0))
+  lambda_sequence_plus <- pmin(sqrt(2 * log(2/alpha) / (log(1:N + 1) * 1:N * lagged_sigma_hat)), .9 / mu_0)
+  lambda_sequence_minus <- pmin(sqrt(2 * log(2/alpha) / (log(1:N + 1) * 1:N * lagged_sigma_hat)), .9 / (1-mu_0))
   if(log){
     K_plus <- cumsum(log(1 + lambda_sequence_plus * (population - mu_0)))
     K_minus <- cumsum(log(1 - lambda_sequence_minus * (population - mu_0)))
@@ -771,7 +772,7 @@ get_two_strata_EB <- function(stratum_1, stratum_2, replace, A_c, u, rule = "equ
   shuffled_2 <- sample(stratum_2, size = N[2], replace = replace) / u[2]
   S_1 <- c(0, cumsum(shuffled_1)[-length(shuffled_1)])
   S_2 <- c(0, cumsum(shuffled_2)[-length(shuffled_2)])
-  assorter_bound <- 1
+  assorter_bound <- 
   
   #epsilon is defined so that eta is always one assorter value (1 invalid vote) above the null mean 
   epsilon_1 <- 1/(2*N[1])
